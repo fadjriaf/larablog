@@ -51,9 +51,8 @@
 
                 <button type="submit" class="btn btn-primary">Update Post</button>
               </form>
-            </div>
-          </div>
-         	 	@if ($errors->any())
+              <br>
+            	@if ($errors->any())
                     <div class="alert alert-danger">
                         <ul>
                             @foreach ($errors->all() as $error)
@@ -62,6 +61,8 @@
                         </ul>
                     </div>
                 @endif
+            </div>
+          </div>
         </div>
     </body>
 </html>
