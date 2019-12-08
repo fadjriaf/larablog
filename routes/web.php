@@ -32,6 +32,8 @@ Route::middleware('auth')->group(function() {
 
 Route::get('/post/{slug}', 'PostController@show')->name('post.show');
 
+Route::resource('category', 'CategoryController');
+
 Auth::routes();
 Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
 

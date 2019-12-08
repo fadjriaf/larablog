@@ -103,6 +103,7 @@
                 <div class="card">
                   <div class="card-header">
                     <h3>{{ $post->title }}</h3>
+                    <p class="text-muted">{{ $post->category ? $post->category->name : 'Uncategorized' }}</p>
                   </div>
                   <center>
                     <br>
