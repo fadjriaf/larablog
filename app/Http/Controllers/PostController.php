@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Post;
 use Illuminate\Support\Str;
+use Image;
+use Storage;
+use Session;
 
 class PostController extends Controller
 {
@@ -44,15 +47,28 @@ class PostController extends Controller
         $this->validate($request, [
             'title'         => 'required|min:3|max:255',
             'slug' => 'required|min:3|max:255|unique:posts',
+            'image'         => 'required|image',
             'description'   => 'required|min:3'
         ]);
 
         $post = new Post;
 
+        // $post->user_id = Auth::id();
         $post->title = $request->title;
         $post->slug = Str::slug($request->slug, '-');
         $post->description = $request->description;
 
+        if ($request->hasfile('image')) {
+            $image = $request->file('image');
+            $filename = time() . '.' . $image->getClientOriginalExtension();
+            $location = public_path('images/') . $filename;
+
+            Image::make($image)->save($location);
+
+            $post->image = $filename;
+        }
+
+        Session::flash('success', 'You have successfully created a post!');
         $post->save();
 
         return redirect()->route('index');
@@ -99,6 +115,7 @@ class PostController extends Controller
         $this->validate($request, [
             'title'         => 'required|min:3|max:255',
             'slug' => 'required|min:3|max:255|unique:posts,id,' . $slug,
+            'image'         => 'sometimes|image',
             'description'   => 'required|min:3'
         ]);
 
@@ -108,6 +125,19 @@ class PostController extends Controller
         $post->slug = Str::slug($request->slug, '-');
         $post->description = $request->description;
 
+        if ($request->hasfile('image')) {
+            Storage::delete($post->image);
+
+            $image = $request->file('image');
+            $filename = time() . '.' . $image->getClientOriginalExtension();
+            $location = public_path('images/') . $filename;
+
+            Image::make($image)->save($location);
+
+            $post->image = $filename;
+        }
+
+        Session::flash('success', 'You have successfully updated a post!');
         $post->save();
 
         return redirect()->route('post.show', $post->slug);
@@ -119,13 +149,17 @@ class PostController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($slug)
     {
         //
-        $post = Post::find($id);
-
+        $post = Post::find($slug);
+        // $post = Post::where('slug', $slug)->first();
+        
+        Storage::delete($post->image);
+        
+        Session::flash('success', 'You have successfully deleted a post!');
         $post->delete();
-
+        
         return redirect()->route('index');
     }
 }

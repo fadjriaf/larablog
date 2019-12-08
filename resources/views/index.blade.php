@@ -31,6 +31,34 @@
             </div>
           </nav>
           <div class="container py-3">
+            @if (Session::has('success'))
+              <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <h4 class="alert-heading">Success!</h4>
+                <p>{{ Session::get('success') }}</p>
+
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            @endif
+
+            @if (Session::has('errors'))
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <h4 class="alert-heading">Error!</h4>
+
+                <p>
+                  <ul>
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                  </ul>
+                </p>
+
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            @endif
           <div class="row">
             @foreach($posts as $post)
               <div class="col-md-4">
@@ -38,11 +66,16 @@
                   <div class="card-header">
                     <h3>{{ $post->title }}</h3>
                   </div>
+                  <center>
+                    <br>
+                    <img src="{{ asset('images/' . $post->image) }}" alt="{{ $post->title }} photo" class="img-fluid" width="300" height="300">
+                  </center>
                   <div class="card-body">
                     <p>{{ substr($post->description, 0, 100) }}</p>
                     <a href="{{ route('post.show', $post->slug) }}" class="btn btn-primary btn-block">Read More</a>
                   </div>
                 </div>
+                <br>
               </div>
             @endforeach
           </div>
