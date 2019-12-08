@@ -34,6 +34,8 @@ Route::get('/post/{slug}', 'PostController@show')->name('post.show');
 
 Route::resource('category', 'CategoryController');
 
+Route::get('/sitemap.xml', 'SitemapController@sitemap');
+
 Auth::routes();
 Route::get('logout', '\App\Http\Controllers\Auth\LoginController@logout');
 
