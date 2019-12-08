@@ -8,6 +8,7 @@ use Illuminate\Support\Str;
 use Image;
 use Storage;
 use Session;
+use Auth;
 
 class PostController extends Controller
 {
@@ -16,6 +17,12 @@ class PostController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    public function __construct()
+    {
+        $this->middleware('auth')->except(['index', 'show']);
+    }
+
     public function index()
     {
         //
@@ -53,7 +60,7 @@ class PostController extends Controller
 
         $post = new Post;
 
-        // $post->user_id = Auth::id();
+        $post->user_id = Auth::id();
         $post->title = $request->title;
         $post->slug = Str::slug($request->slug, '-');
         $post->description = $request->description;
@@ -98,6 +105,10 @@ class PostController extends Controller
     {
         //
         $post = Post::where('slug', $slug)->first();
+
+        if ($post->user_id != Auth::id()) {
+            return redirect()->route('index');
+        }
 
         return view('post.edit')->withPost($post);
     }
